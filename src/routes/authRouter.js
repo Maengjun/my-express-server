@@ -2,7 +2,7 @@ import { Router } from 'express';
 import passport from 'passport';
 import { users } from '../users.js';
 import User from '../models/User.js'
-
+import Todo from '../models/Todos.js';
 
 const router = Router();
 
@@ -68,7 +68,6 @@ router.put('/change-password', async (req, res) => {
   }
 });
 
-  
 router.delete('/delete-account', async (req, res) => {
   try {
     const user = await User.findOne({ username : req.user.username })
@@ -92,4 +91,7 @@ router.delete('/delete-account', async (req, res) => {
     res.status(500).send('Internal server error');
   }
 });
+
+
+
 export default router;
