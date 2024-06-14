@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import passport from 'passport';
+import jwt from 'jsonwebtoken'
 import { users } from '../users.js';
 import User from '../models/User.js'
 import Todo from '../models/Todos.js';
@@ -7,18 +8,20 @@ import Todo from '../models/Todos.js';
 const router = Router();
 
 router.post('/login', (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('local', {session : false}, (err, user, info) => {
     if (err) {
       return next(err);
     }
     if (!user) {
       return res.status(401).json({ message: 'Authentication failed' });
     }
-    req.logIn(user, (err) => {
+    req.logIn(user, {session : false}, (err) => {
       if (err) {
         return next(err);
       }
-      return res.status(200).json({ message: 'Logged in successfully', user });
+      const accessToken = jwt.sign({id : user._id, username : user.username}, 'kitri_secret', {expiresIn : '10m'})
+
+      return res.status(200).json({ message: 'Logged in successfully', accessToken });
     });
   })(req, res, next);
 });
